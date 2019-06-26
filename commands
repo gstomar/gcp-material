@@ -1,0 +1,247 @@
+Ex : 35.225.198.29 
+In : 10.128.0.2
+
+Admin user	
+user
+Admin password (Temporary)	
+o2rxqmNhybDM
+
+
+POST https://www.googleapis.com/compute/v1/projects/qwiklabs-gcp-7bb4675b88ffbef3/global/networks
+{
+  "routingConfig": {
+    "routingMode": "REGIONAL"
+  },
+  "name": "learnauto",
+  "description": "Learn about auto-mode networks",
+  "autoCreateSubnetworks": true
+}
+
+
+gcloud compute --project=qwiklabs-gcp-7bb4675b88ffbef3 networks create learnauto --description="Learn about auto-mode networks" --subnet-mode=auto
+
+gcloud compute --project=qwiklabs-gcp-7bb4675b88ffbef3 firewall-rules create learnauto-allow-icmp --description="Allows ICMP connections from any source to any instance on the network." --direction=INGRESS --priority=65534 --network=learnauto --action=ALLOW --rules=icmp --source-ranges=0.0.0.0/0
+
+gcloud compute --project=qwiklabs-gcp-7bb4675b88ffbef3 firewall-rules create learnauto-allow-internal --description="Allows connections from any source in the network IP range to any instance on the network using all protocols." --direction=INGRESS --priority=65534 --network=learnauto --action=ALLOW --rules=all --source-ranges=10.128.0.0/9
+
+gcloud compute --project=qwiklabs-gcp-7bb4675b88ffbef3 firewall-rules create learnauto-allow-rdp --description="Allows RDP connections from any source to any instance on the network using port 3389." --direction=INGRESS --priority=65534 --network=learnauto --action=ALLOW --rules=tcp:3389 --source-ranges=0.0.0.0/0
+
+gcloud compute --project=qwiklabs-gcp-7bb4675b88ffbef3 firewall-rules create learnauto-allow-ssh --description="Allows TCP connections from any source to any instance on the network using port 22." --direction=INGRESS --priority=65534 --network=learnauto --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
+
+mysqlimport --host=$IP_ADDRESS_SQL --ignore-lines=1 --fields-terminated-by=, resources --verbose --local -u root -p  billing.csv
+
+104.198.61.10
+
+
+
+free
+To see details about the RAM installed on your VM, run the following command:
+sudo dmidecode -t 17
+To verify the number of processors, run the following command:
+nproc
+To see details about the CPUs installed on your VM, run the following command:
+lscpu
+
+for i in {1..3}; \
+do \
+  gcloud compute instances create "nginxstack-$i" \
+  --machine-type "f1-micro" \
+  --tags nginxstack-tcp-443,nginxstack-tcp-80 \
+  --zone us-central1-f \
+  --image   "https://www.googleapis.com/compute/v1/projects/bitnami-launchpad/global/images/bitnami-nginx-1-14-0-4-linux-debian-9-x86-64" \
+  --boot-disk-size "200" --boot-disk-type "pd-standard" \
+  --boot-disk-device-name "nginxstack-$i"; \
+done
+
+gcloud compute firewall-rules create nginx-firewall \
+ --allow tcp:80,tcp:443 \
+ --target-tags nginxstack-tcp-80,nginxstack-tcp-443
+
+ gsutil cp gs://cloud-training/archinfra/gae-hello/* .
+
+ dev_appserver.py $(pwd)
+
+ gcloud app deploy app.yaml
+
+ You can stream logs from the command line by running:
+  $ gcloud app logs tail -s default
+
+To view your application in the web browser run:
+  $ gcloud app browse
+
+To take a quick anonymous survey, run:
+  $ gcloud alpha survey
+
+To re-deploy the application to App Engine, run the following command:
+gcloud app deploy app.yaml --quiet
+The --quiet flag disables all interactive prompts when running gcloud commands. If input is required, defaults will be used. In this case, it avoids the need for you to type Y when prompted to continue the deployment.
+
+gcloud config list project
+
+If the project ID is undefined or does not match [PROJECT_ID], update it using
+gcloud config set project <Enter PROJECT_ID here>
+
+In Cloud Shell, to create the vpn-1 gateway, run the following command:
+gcloud compute target-vpn-gateways \
+create vpn-1 \
+--network vpn-network-1  \
+--region us-central1
+
+To reserve a Static IP for the vpn-1 gateway, run the following command:
+gcloud compute addresses create --region us-central1 vpn-1-static-ip
+
+To view the Static IP for the vpn-1 gateway, run the following command:
+gcloud compute addresses list
+
+
+To create ESP forwarding for vpn-1, run the following command:
+gcloud compute \
+forwarding-rules create vpn-1-esp \
+--region us-central1  \
+--ip-protocol ESP  \
+--address $STATIC_IP_VPN_1 \
+--target-vpn-gateway vpn-1
+
+To create UDP500 forwarding for vpn-1, run the following command:
+gcloud compute \
+forwarding-rules create vpn-1-udp500  \
+--region us-central1 \
+--ip-protocol UDP \
+--ports 500 \
+--address $STATIC_IP_VPN_1 \
+--target-vpn-gateway vpn-1
+
+To create UDP4500 forwarding for vpn-1, run the following command:
+gcloud compute \
+forwarding-rules create vpn-1-udp4500  \
+--region us-central1 \
+--ip-protocol UDP --ports 4500 \
+--address $STATIC_IP_VPN_1 \
+--target-vpn-gateway vpn-1
+
+In Cloud Shell, to verify the VPN gateways, run the following command:
+gcloud compute target-vpn-gateways list
+
+To create the tunnel for traffic from Network-1 to Network-2, run the following command:
+gcloud compute \
+vpn-tunnels create tunnel1to2  \
+--peer-address $STATIC_IP_VPN_2 \
+--region us-central1 \
+--ike-version 2 \
+--shared-secret gcprocks \
+--target-vpn-gateway vpn-1 \
+--local-traffic-selector 0.0.0.0/0 \
+--remote-traffic-selector 0.0.0.0/0
+
+To verify that the tunnels are created, run the following command:
+gcloud compute vpn-tunnels list
+
+To create a static route from Network-1 to Network-2, run the following command:
+gcloud compute  \
+routes create route1to2  \
+--network vpn-network-1 \
+--next-hop-vpn-tunnel tunnel1to2 \
+--next-hop-vpn-tunnel-region us-central1 \
+--destination-range 10.1.3.0/24
+
+Choose a region and zone from the list of available regions and zones, by running these commands in Cloud Shell:
+gcloud compute regions list
+gcloud compute zones list
+
+export MY_REGION=us-central1
+export MY_ZONE1=us-central1-a
+export MY_ZONE2=us-central1-f
+
+The target pool is named extloadbalancer and is connected to the health check you created in the previous step. Run the following command:
+gcloud compute target-pools create extloadbalancer \
+    --region $MY_REGION --http-health-check webserver-health
+
+Add the three VMs, webserver1, webserver2, and webserver3, into the target pool extloadbalancer. Run the following command:
+gcloud compute target-pools add-instances extloadbalancer \
+    --instances webserver1,webserver2,webserver3 \
+     --instances-zone=$MY_ZONE1
+
+To complete the configuration of the forwarding rule, run the following command:
+gcloud compute forwarding-rules create webserver-rule \
+    --region $MY_REGION --ports 80 \
+    --address $STATIC_EXTERNAL_IP --target-pool extloadbalancer
+
+gcloud compute instances create webserver4 \
+    --image-family debian-9 \
+    --image-project debian-cloud \
+    --tags int-lb \
+    --zone $MY_ZONE2 \
+    --subnet default \
+    --metadata startup-script-url="gs://cloud-training/archinfra/mystartupscript",my-server-id="WebServer-4"
+
+To create ig1 in your first zone, run the following command:
+gcloud compute instance-groups unmanaged create ig1 \
+    --zone $MY_ZONE1
+
+To add webserver2 and webserver3 to ig1, run the following command:
+gcloud compute instance-groups unmanaged add-instances ig1 \
+    --instances=webserver2,webserver3 --zone $MY_ZONE1
+
+To create a health check, run the following command:
+gcloud compute health-checks create tcp my-tcp-health-check \
+    --port 80
+
+To create a backend service, run the following command:
+gcloud compute backend-services create my-int-lb \
+    --load-balancing-scheme internal \
+    --region $MY_REGION \
+    --health-checks my-tcp-health-check \
+    --protocol tcp
+
+To add ig1 to your backend service, run the following command:
+gcloud compute backend-services add-backend my-int-lb \
+    --instance-group ig1 \
+    --instance-group-zone $MY_ZONE1 \
+    --region $MY_REGION
+
+To create a forwarding rule, run the following command:
+gcloud compute forwarding-rules create my-int-lb-forwarding-rule \
+    --load-balancing-scheme internal \
+    --ports 80 \
+    --network default \
+    --subnet default \
+    --region $MY_REGION \
+    --backend-service my-int-lb
+
+To configure a firewall rule to allow traffic to the load balancer and from the load balancer to the instances, run the following command:
+gcloud compute firewall-rules create allow-internal-lb \
+    --network default \
+    --source-ranges 0.0.0.0/0 \
+    --target-tags int-lb \
+    --allow tcp:80,tcp:443
+
+To configure another firewall rule to allow health check probes from the health checker, run the following command:
+gcloud compute firewall-rules create allow-health-check \
+    --network default \
+    --source-ranges 130.211.0.0/22,35.191.0.0/16 \
+    --target-tags int-lb \
+    --allow tcp
+
+
+To create the client, run the following command:
+gcloud compute instances create standalone-instance-1 \
+    --image-family debian-9 \
+    --image-project debian-cloud \
+    --zone $MY_ZONE1 \
+    --tags standalone \
+    --subnet default
+
+To create a firewall rule to allow SSH connections to the standalone client instance, run the following command:
+gcloud compute firewall-rules create allow-ssh-to-standalone \
+    --network default \
+    --target-tags standalone \
+    --allow tcp:22
+
+Store the IP address of the internal load balancer in an environment variable:
+export ILB_IP=<Enter the IP address of the internal load balancer>
+
+Curl the IP address of the load balancer several times:
+for ((i=1;i<=10;i++)); do curl $ILB_IP; done
+
+To place a load on the load balancer, run the following command:
+ab -n 50000 -c 1000 http://$LB_IP/
